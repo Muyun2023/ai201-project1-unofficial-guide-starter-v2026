@@ -55,26 +55,21 @@ in at least 4 of 5 tries.
 
 ---
 
-## 4. Something about your chunks
+## 4. Chunks are whole sections, not fragments
 
-<!-- YOU WRITE THIS ONE.
-
-     How would you know if your chunks were the right size? Name something
-     countable or observable.
-
-     Examples of the right shape — don't copy these, they should come from
-     what you actually saw in Milestone 3:
-       - "At least 4 of 5 sampled chunks read as a complete thought, with no
-          sentence cut in half at either end."
-       - "No chunk is shorter than 200 characters, since anything below that
-          in my corpus turned out to be a heading with no content under it." -->
-
-
+Every chunk begins with a Markdown heading line and ends with a
+sentence-ending mark (`.`, `?`, or `!`). No exceptions.
 
 **Why this target:**
-
-
-
+These documents are Markdown town guides whose author already divided them
+into labelled sections — `## Getting there`, `## Eat and drink`, and so on.
+Splitting on those headings means the chunk boundaries are the author's, not
+a character count's. If a chunk does not start with a heading, it did not come
+from a heading boundary — that is a bug in the splitter, not bad luck, so the
+right allowance is zero rather than "a few". The baseline chunker shows what
+the alternative costs: it ended a chunk of `guide_accessibility.md` at
+"The station is a 15-", opened a chunk of `guide_givens_mill.md` with
+"nd drink", and produced a shortest chunk of 24 characters.
 ---
 
 ## 5. Your choice
