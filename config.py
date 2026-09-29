@@ -24,11 +24,18 @@ CORPUS = os.getenv("AI201_CORPUS", "city_guides")
 
 
 # ─── Chunking (Milestone 3) ──────────────────────────────────────────────────
-# These are deliberately plain, generic numbers. Milestone 3 is where you
-# replace them with numbers that fit the documents you actually read.
+# `split_documents` no longer reads either of these. It cuts on `## ` headings,
+# so a chunk is one section and its length is whatever the author wrote — 174
+# to 762 characters across this corpus, 322 on average. Overlap is 0 by
+# construction: overlap repairs cuts made in arbitrary places, and there are
+# none left to repair.
+#
+# The two numbers stay because `fallback_split` still takes them as defaults,
+# and keeping the old chunker runnable is what makes a before/after comparison
+# possible in unit 2.
 
-CHUNK_SIZE = 800        # characters per chunk
-CHUNK_OVERLAP = 120     # characters shared between neighbouring chunks
+CHUNK_SIZE = 800        # fallback_split only — characters per chunk
+CHUNK_OVERLAP = 120     # fallback_split only — characters shared between chunks
 
 
 # ─── Retrieval (Milestone 4) ─────────────────────────────────────────────────
