@@ -42,6 +42,11 @@ Muyun Ji · corpus: `city_guides`
 
      Milestone 3. -->
 
+**Known issue:** Rule 2 (keep each document's opening part as its own chunk)
+can produce chunks with no facts, e.g. `guide_accessibility.md#0`. I haven't
+yet checked how many of the 14 opening chunks are like this. I'm leaving the
+rule in place for now and will revisit it in Unit 2.
+
 ## Sample Chunks
 
 <!-- Five chunks, pasted as text. Label each one and name the file it came from
@@ -53,29 +58,74 @@ Muyun Ji · corpus: `city_guides`
 
      Milestone 3. -->
 
-**Chunk 1** — source: `` — produced by: ``
+**Chunk 1** — source: `guide_accessibility.md#0` — produced by: `chunker.py::split_documents`
+<!--
+> **Note — known weakness.** This chunk carries no facts. It is the opening
+> part of `guide_accessibility.md` (the `# H1` line plus its preamble), which
+> `split_documents` keeps as a chunk of its own under rule 2. That rule exists
+> because `guide_corry_vale.md` states its population in the preamble and
+> nowhere else. Here the preamble is only an introduction, so the chunk can't
+> answer a question on its own. At retrieval time it can only act as noise: it
+> may match broad questions about accessibility and take a top-k slot from a
+> section that actually holds the answer.
+>
+> **Why I kept it for now:** a fix has to keep the Corry Vale population while
+> removing empty preambles like this one. I'd rather make that change after
+> Unit 2 shows whether this chunk actually shows up in retrieval results.
+>
+> **Possible fixes to test later:**
+> 1. Merge the opening part into the first `##` section chunk instead of
+>    keeping it separate.
+> 2. Keep the opening part only if it is longer than a minimum length.
+>    The threshold still needs to be checked against the Corry Vale preamble.
+-->
+```
+# Getting around the region with limited mobility
+
+An honest assessment rather than a promotional one. Some of these places are
+difficult and it is better to know in advance.
 
 ```
-```
 
-**Chunk 2** — source: `` — produced by: ``
-
-```
-```
-
-**Chunk 3** — source: `` — produced by: ``
+**Chunk 2** — source: `guide_corry_vale.md#5` — produced by: `chunker.py::split_documents`
 
 ```
+# Corry Vale
+
+## Where to stay
+
+Perhaps thirty beds in the entire valley, spread across two pubs and a handful of farmhouse rooms. In summer these are booked months ahead. Camping is permitted on two marked fields and nowhere else.
 ```
 
-**Chunk 4** — source: `` — produced by: ``
+**Chunk 3** — source: `guide_givens_mill.md#2` — produced by: `chunker.py::split_documents`
 
 ```
+# Givens Mill
+
+## Getting around
+
+Everything is on one street along the river. The mill is at one end and the church at the other, eight minutes apart. The riverside path continues in both directions for as far as you want to walk.
 ```
 
-**Chunk 5** — source: `` — produced by: ``
+**Chunk 4** — source: `guide_kestrelford.md#4` — produced by: `chunker.py::split_documents`
 
 ```
+# Kestrelford
+
+## What to see
+
+The market square on a Saturday morning is the main event and has run continuously since the 1400s. The parish church has a 13th-century tower you can climb for £2. The old trackbed walk runs six miles to the next village along an easy gradient and is the best half-day here.
+
+```
+
+**Chunk 5** — source: `guide_pellew_sands.md#6` — produced by: `chunker.py::split_documents`
+
+```
+# Pellew Sands
+
+## When to go
+
+June and September for the beach without the crowds. July and August are busy and the town is at its most itself, for better and worse. Winter is bleak, largely closed, and has a following among people who like that sort of thing.
 ```
 
 ## Sample Answer
