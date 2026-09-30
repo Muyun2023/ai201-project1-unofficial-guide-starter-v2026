@@ -59,8 +59,10 @@ rule in place for now and will revisit it in Unit 2.
      Milestone 3. -->
 
 **Chunk 1** — source: `guide_accessibility.md#0` — produced by: `chunker.py::split_documents`
+
 <!--
-> **Note — known weakness.** This chunk carries no facts. It is the opening
+> ** ！！！Note — known weakness！！！** 
+This chunk carries no facts. It is the opening
 > part of `guide_accessibility.md` (the `# H1` line plus its preamble), which
 > `split_documents` keeps as a chunk of its own under rule 2. That rule exists
 > because `guide_corry_vale.md` states its population in the preamble and
@@ -134,10 +136,16 @@ June and September for the beach without the crowds. July and August are busy an
      visible. Milestone 4. -->
 
 **Question:**
+What time does the bakery in Kestrelford sell out?
 
 **Answer:**
 
 ```
+> The bakery in Kestrelford sells out by 11am.
+>
+> (Sources: `guide_kestrelford.md` and `guide_eating.md`)
+>
+> Sources retrieved: guide_eating.md, guide_kestrelford.md
 ```
 
 **My relevance cutoff:**
@@ -151,9 +159,36 @@ June and September for the beach without the crowds. July and August are busy an
 
      Milestone 4. -->
 
+**My relevance cutoff:** 0.7
+
 | Question | In corpus? | Best distance |
-|---|---|---|
-|  |  |  |
+| -------- | ---------- | ------------- |
+| How many people live in the largest village in Corry Vale? | Yes | 0.1637 |
+| What time does the bakery in Kestrelford sell out? | Yes | 0.3221 |
+| In what year did Marchwood's covered market begin operating? | Yes | 0.3827 |
+| Which evening meal is hardest to find across the region...? | Yes | 0.5106 |
+| Why can't visitors use one bus ticket across the whole region? | Yes | 0.6374 |
+| What is the capital of Mongolia? | No | 0.8026 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.8350 |
+| How do I write a for loop in Rust? | No | 0.8365 |
+| How do I change the oil in a diesel engine? | No | 0.8881 |
+| Who won the 1994 World Cup? | No | 0.9753 |
+
+In-corpus questions landed between 0.16 and 0.64; out-of-scope questions
+between 0.80 and 0.98, leaving a gap from 0.64 to 0.80. The starter's
+default of 0.6 wrongly refused the bus-ticket question (0.637), even though
+the top chunk (guide_regional_transport.md, "Buses") holds the answer. Its
+distance is high because the question says "one bus ticket" while the
+document says "three operators". I put the cutoff at 0.7, which leaves
+about 0.06 of margin below it and 0.10 above. 
+
+The risk: The risk is near-miss questions. "Is there a cinema in Kestrelford?" isn't
+covered by the guides, but it scored 0.401, closer than two of my in-corpus
+questions, because the place name matches the "# Kestrelford" title on every
+chunk. No cutoff could refuse it without also refusing real questions. It
+passed the gate, and the grounding instruction caught it: the model said it
+didn't have enough information. It still cited guide_kestrelford.md in that
+refusal, which I may tighten later.
 
 ## How I Used AI
 
