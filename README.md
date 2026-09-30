@@ -437,50 +437,133 @@ answers, and it's the end of the chain above, not a separate problem.
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** rule 2 of `chunker.py::split_documents`. Each document's
+opening part (the `# H1` line plus any text before the first `##`) used to be
+a chunk of its own; now it is merged into the chunk for the first section.
+Nothing else changed.
 
-I'm merging each document's opening part into its first ## section, so that opening chunks with no facts, like guide_accessibility.md#0, stop taking a top-5 slot.
+**Why I picked it:** I'm merging each document's opening part into its first
+section so that opening chunks with no facts, like `guide_accessibility.md#0`,
+stop taking a top-5 slot. In unit 1 I kept that chunk and said I'd wait for
+unit 2 to see whether it showed up in retrieval. It did: in 2 of 9 test
+queries.
 
-**Why I picked it:**
+**Why I thought it might not work, before running it:**
 
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+1. The merged chunk still carries the title "Getting around the region", so
+   it could keep matching on title words. (I raised this one myself.)
+2. The Corry Vale population would share a chunk with a section, which could
+   make it harder to retrieve. Criterion 1 tests exactly this.
+3. A merged chunk covers two subjects, so it could be too broad.
+
+A hint against risk 1: accessibility's four section chunks carry the same
+title, yet none of them reached the top 5 in any query. Only the opening
+chunk, which is nearly all title, did.
+
+### Before and after
+
+**The five criteria** (same test, same settings):
+
+| Criterion | Target | Before (runs 1/2/3) | After (runs 1/2/3) |
+| --- | --- | --- | --- |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5, 5/5, 5/5 | 5/5, 5/5, 5/5 |
+| 2. Every answer names a source | 5 of 5 | 5/5, 5/5, 5/5 | 5/5, 5/5, 5/5 |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 |
+| 4. Chunks are whole sections | 0 exceptions | 94/94 | 84/84 |
+| 5. No-town questions reach the cross-cutting guide | 2 of 2 | 2/2, 2/2, 2/2 | 2/2, 2/2, 2/2 |
+
+All five were met before and are still met, so these show the change broke
+nothing. They can't show whether it helped. That's what the next table is
+for.
+
+**Targeted measure:** the same 9 queries (my 5 test questions plus 4
+rephrasings), top 5 each, from `results/retrieve_before.txt` and
+`results/retrieve_after.txt`.
+
+| Measure | Before | After |
+| --- | --- | --- |
+| `guide_accessibility.md` opening chunk in a top 5 | 2 of 9 queries | 0 of 9 |
+| Opening-part chunks in a top 5 that aren't the answer | 5 appearances | 3 (all Marchwood's merged chunk, each further away than before) |
+| Bus question: answer chunk's lead over #2 | 0.004 | 0.047 |
+| Corry Vale population: answer chunk distance | 0.164 (rank 1) | 0.286 (rank 1) |
+| Answer chunk ranked first | 9 of 9 | 9 of 9 |
+| Closest out-of-scope question | 0.803 | 0.835 |
 
 ### Run Log — After
 
-<!-- Same format, same five criteria, three runs each.
-     `python run_eval.py --label after` -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
-|---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| --- | --- | --- | --- | --- | --- |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunks are whole sections (heading start, sentence end) | 0 exceptions | 84/84 | 84/84 | 84/84 | MET |
+| 5. No-town questions reach the cross-cutting guide | 2 of 2 | 2/2 | 2/2 | 2/2 | MET |
 
-**Did it help?**
+Source: `results/run_2026-09-29_2311_after.md`, produced by `run_eval.py::main`
+(same settings as before: top-k 5, cutoff 0.7, 3 runs, caching off).
+Criterion 4 from `check_chunks.py`: "84 chunks checked, 0 fail".
+Targeted retrieval check: `results/retrieve_after.txt` (compare with
+`results/retrieve_before.txt`).
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
+**Output from the after run** — `run_eval.py::main`:
 
-     Milestone 4. -->
+```
+Q: Why can't visitors use one bus ticket across the whole region?
+Best distance: 0.6374 · Sources retrieved: guide_kestrelford.md, guide_marchwood.md, guide_regional_transport.md
+Visitors cannot use one bus ticket across the whole region because three different operators run services, and they do not accept each other's tickets (*guide_regional_transport.md*).
+```
+
+```
+Q: How many people live in the largest village in Corry Vale?
+Best distance: 0.2861 · Sources retrieved: guide_corry_vale.md, guide_walking.md
+The largest village in Corry Vale has 900 people (guide_corry_vale.md).
+```
+
+### Did it help?
+
+**In one sentence:** yes. On the same 9 retrieval queries run before and
+after, the fact-less opening chunk dropped out of every top 5 (2 of 9 → 0 of
+9), while all five criteria stayed met.
+
+**What it fixed:** the chunk with no facts is gone from every top 5,
+including from what the model is given (the bus question's "Sources
+retrieved" lost `guide_accessibility.md`). Risk 1 didn't happen: merged with
+"## Straightforward", the chunk no longer resembled a bus question. The bus
+answer went from winning by 0.004 to winning by 0.047, and the slot it freed
+went to the railway section, which is at least about transport.
+
+**A side effect I didn't predict:** opening chunks, being mostly title and
+overview, were also what out-of-scope questions matched best (Mongolia
+matched Corry Vale's opening chunk, the 1994 World Cup matched Givens
+Mill's). With them merged, three out-of-scope questions moved further away
+and the gap between in-corpus and out-of-scope widened from 0.637–0.803 to
+0.637–0.835.
+
+**What it cost:** risk 2 happened in a mild form. The Corry Vale population
+chunk moved from 0.164 to 0.286, and its lead over the next chunk shrank from
+0.18 to 0.06. It still ranks first and all three answers were correct.
+
+**What it didn't fix:** Marchwood's opening part, now merged with its first
+section, still reaches the bus questions' top 5 in 3 of 9 queries. The
+evening-meal question's retrieval was identical before and after, so the
+Corry Vale chunk still reaches the model. None of the three after-run answers
+repeated the "Sunday evening in Corry Vale" inference, but since the model
+saw the same chunks, that is chance, not this change.
+
+
 
 ## What's Still Broken
 
 <!-- For each criterion still missed after your fix: what you'd do about it,
      and why you stopped where you did.
-
      "I ran out of time" is fine if it's true. Pretending nothing is left is
      not.
-
      Milestone 5. -->
+
+
 
 ## What I'd Do Differently
 
 <!-- Knowing what you know now — which of your five criteria would you write
      differently, and why?
-
      Milestone 5. -->

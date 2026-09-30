@@ -1,0 +1,153 @@
+]633;E;for q in   "What time does the bakery in Kestrelford sell out?"   "In what year did Marchwood's covered market begin operating?"   "Which evening meal is hardest to find across the region, and where can you still get it?"   "How many people live in the largest village in Corry Vale?"   "Why can't visitors use one bus ticket across the whole region?"   "Why doesn't a single bus ticket work everywhere in the region?"   "Can I buy one ticket for all the buses in the region?"   "Which meal is hardest to get in the region in the evening, and where is it still served?"   "What evening meal is difficult to find in this region, and which places still offer it?"\x3b do   python app.py retrieve "$q"\x3b done > results/retrieve_after.txt;352cffdb-3594-4f30-86e1-a1c7865e4a2f]633;C
+Question: What time does the bakery in Kestrelford sell out?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.3221     guide_kestrelford.md             # Kestrelford  ## Eat and drink  Four pubs, two café...
+2   0.4346     guide_eating.md                  # Eating across the region  ## Markets  Kestrelford'...
+3   0.4379     guide_kestrelford.md             # Kestrelford  ## When to go  Late spring and early ...
+4   0.4653     guide_eating.md                  # Eating across the region  ## Local specifics  Hald...
+5   0.4859     guide_kestrelford.md             # Kestrelford  ## Getting around  Everything is with...
+
+Gate: best distance 0.322 is under the 0.7 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.
+
+Question: In what year did Marchwood's covered market begin operating?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.3827     guide_eating.md                  # Eating across the region  ## Markets  Kestrelford'...
+2   0.4846     guide_marchwood.md               # Marchwood  ## When to go  Any time. This is the on...
+3   0.5732     guide_kestrelford.md             # Kestrelford  ## When to go  Late spring and early ...
+4   0.5820     guide_marchwood.md               # Marchwood  ## Where to stay  Plentiful and, outsid...
+5   0.6112     guide_marchwood.md               # Marchwood  ## Eat and drink  The best eating is in...
+
+Gate: best distance 0.383 is under the 0.7 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.
+
+Question: Which evening meal is hardest to find across the region, and where can you still get it?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.5106     guide_eating.md                  # Eating across the region  ## Opening hours  This c...
+2   0.5151     guide_pellew_sands.md            # Pellew Sands  ## Eat and drink  The seafront is ch...
+3   0.5269     guide_eating.md                  # Eating across the region  ## Local specifics  Hald...
+4   0.5493     guide_corry_vale.md              # Corry Vale  ## Eat and drink  One pub in the large...
+5   0.5831     guide_eating.md                  # Eating across the region  ## The pattern worth kno...
+
+Gate: best distance 0.511 is under the 0.7 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.
+
+Question: How many people live in the largest village in Corry Vale?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.2861     guide_corry_vale.md              # Corry Vale  Corry Vale is not a town but a valley ...
+2   0.3424     guide_corry_vale.md              # Corry Vale  ## Where to stay  Perhaps thirty beds ...
+3   0.3635     guide_corry_vale.md              # Corry Vale  ## Getting around  Nothing within the ...
+4   0.3755     guide_walking.md                 # Walking in the region  ## Moderate, with hills  Th...
+5   0.3817     guide_corry_vale.md              # Corry Vale  ## Eat and drink  One pub in the large...
+
+Gate: best distance 0.286 is under the 0.7 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.
+
+Question: Why can't visitors use one bus ticket across the whole region?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.6374     guide_regional_transport.md      # Getting around the region  ## Buses  Three operato...
+2   0.6839     guide_marchwood.md               # Marchwood  Marchwood is the regional hub — 180,000...
+3   0.7104     guide_marchwood.md               # Marchwood  ## Getting around  A tram network of fo...
+4   0.7166     guide_kestrelford.md             # Kestrelford  ## Getting around  Everything is with...
+5   0.7208     guide_regional_transport.md      # Getting around the region  ## The railway  The lin...
+
+Gate: best distance 0.637 is under the 0.7 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.
+
+Question: Why doesn't a single bus ticket work everywhere in the region?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.5946     guide_regional_transport.md      # Getting around the region  ## Buses  Three operato...
+2   0.6814     guide_regional_transport.md      # Getting around the region  ## The railway  The lin...
+3   0.6822     guide_marchwood.md               # Marchwood  Marchwood is the regional hub — 180,000...
+4   0.6827     guide_marchwood.md               # Marchwood  ## Getting around  A tram network of fo...
+5   0.6848     guide_kestrelford.md             # Kestrelford  ## Getting around  Everything is with...
+
+Gate: best distance 0.595 is under the 0.7 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.
+
+Question: Can I buy one ticket for all the buses in the region?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.6472     guide_regional_transport.md      # Getting around the region  ## Buses  Three operato...
+2   0.6754     guide_marchwood.md               # Marchwood  ## Getting around  A tram network of fo...
+3   0.7000     guide_kestrelford.md             # Kestrelford  ## Getting around  Everything is with...
+4   0.7324     guide_regional_transport.md      # Getting around the region  ## The railway  The lin...
+5   0.7650     guide_marchwood.md               # Marchwood  Marchwood is the regional hub — 180,000...
+
+Gate: best distance 0.647 is under the 0.7 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.
+
+Question: Which meal is hardest to get in the region in the evening, and where is it still served?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.5022     guide_eating.md                  # Eating across the region  ## Opening hours  This c...
+2   0.5180     guide_pellew_sands.md            # Pellew Sands  ## Eat and drink  The seafront is ch...
+3   0.5437     guide_eating.md                  # Eating across the region  ## Local specifics  Hald...
+4   0.5576     guide_corry_vale.md              # Corry Vale  ## Eat and drink  One pub in the large...
+5   0.5746     guide_givens_mill.md             # Givens Mill  ## Eat and drink  A tearoom attached ...
+
+Gate: best distance 0.502 is under the 0.7 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.
+
+Question: What evening meal is difficult to find in this region, and which places still offer it?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.4684     guide_eating.md                  # Eating across the region  ## Opening hours  This c...
+2   0.4855     guide_corry_vale.md              # Corry Vale  ## Eat and drink  One pub in the large...
+3   0.5005     guide_eating.md                  # Eating across the region  ## Local specifics  Hald...
+4   0.5030     guide_pellew_sands.md            # Pellew Sands  ## Eat and drink  The seafront is ch...
+5   0.5295     guide_kestrelford.md             # Kestrelford  ## Eat and drink  Four pubs, two café...
+
+Gate: best distance 0.468 is under the 0.7 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.

@@ -102,9 +102,7 @@ def _has_body(section: str) -> bool:
     """True if there is anything under the section's heading line."""
     return any(line.strip() for line in section.strip().split("\n")[1:])
 
-
-def split_documents(documents: list[Document]) -> list[Chunk]:
-    """
+"""
     Split on Markdown section headings instead of on a character count.
 
     These documents are sectioned guides: the author already marked where one
@@ -117,9 +115,16 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
     1. Cut immediately before every `## ` line. One section, one chunk.
 
     2. Keep the opening part — the `# H1` line plus any preamble above the
+       first `## ` — by merging it into the first section's chunk.
+       `guide_corry_vale.md` states its population there and nowhere else, so
+       a splitter that only recognised `## ` would lose that fact entirely.
+       (Revised in unit 2. It used to be a chunk of its own, and opening
+       chunks reached the top 5 on title words alone: `guide_accessibility.md#0`,
+       which holds no facts, in 2 of 9 test queries.)
+       ( In unit1: "2. Keep the opening part — the `# H1` line plus any preamble above the
        first `## ` — as a chunk of its own. `guide_corry_vale.md` states its
        population there and nowhere else, so a splitter that only recognised
-       `## ` would lose that fact entirely.
+       `## ` would lose that fact entirely.")
 
     3. Drop any part with nothing under its heading. `guide_walking.md`,
        `guide_eating.md` and `guide_seasons.md` go straight from `# H1` to the
@@ -138,8 +143,61 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
     places; these cuts are made where the author put a boundary, so there is
     nothing to repair.
     """
+def split_documents(documents: list[Document]) -> list[Chunk]:
+    
     chunks: list[Chunk] = []
+    for doc in documents:
+        text = doc.text.strip()
+        title = _document_title(text)
+        index = 0
+        opening = ""  # Rule 2 (revised in unit 2): held back, merged into the first section
 
+        for position, section in enumerate(_SECTION_BREAK.split(text)):
+            section = section.strip()
+
+            # Rule 3 — a heading with no body is not worth storing.
+            if not section or not _has_body(section):
+                continue
+
+            # Rule 2 — hold the opening part instead of storing it on its own.
+            if position == 0 and not section.startswith("## "):
+                opening = section
+                continue
+
+            # Rule 2 — the first section carries the opening part (which starts
+            # with the title). Rule 4 — every later section gets the title.
+            if opening:
+                body = f"{opening}\n\n{section}"
+                opening = ""
+            elif title:
+                body = f"{title}\n\n{section}"
+            else:
+                body = section
+
+            chunks.append(
+                Chunk(
+                    text=body,
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+            index += 1
+
+        # A document with no `## ` sections keeps its opening part as one chunk.
+        if opening:
+            chunks.append(
+                Chunk(
+                    text=opening,
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+
+    return chunks    
+
+''' Unit1 codes before the improvement of Unit2 M4
     for doc in documents:
         text = doc.text.strip()
         title = _document_title(text)
@@ -167,6 +225,8 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
             index += 1
 
     return chunks
+'''
+
 
 
 def describe(chunks: list[Chunk]) -> str:
