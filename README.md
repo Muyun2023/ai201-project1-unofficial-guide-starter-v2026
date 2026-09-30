@@ -375,6 +375,66 @@ Visitors cannot use one bus ticket across the whole region because there are thr
 
      Milestone 3. -->
 
+**No criterion was missed.** All five met their targets in all three runs.
+The assignment asks what that means, and I think it means some of my targets
+were set too safe: they checked *whether* something happened, not *how
+reliably*. I tested one of them further before deciding what to tighten.
+
+### Were my targets too low?
+
+| # | What the test showed | Tightened version |
+| --- | --- | --- |
+| 1 and 5 | The answer chunk was in the top 5 every time. But for both no-town questions it ranked first by only 0.004 and 0.005, so I tested whether that ranking survives rephrasing (below). It did. | For each question, the chunk holding the answer ranks **first under three different phrasings**. The two narrowest questions pass this (6 of 6). I haven't tested the other three yet. |
+| 2 | Every answer named a file, but run 3 of the evening-meal question cited `guide_corry_vale.md` for a claim the file doesn't make. | Every factual claim in an answer appears in the file it cites, 15 of 15. My current system scores 14 of 15. |
+| 3 | All five out-of-scope questions sat at 0.80 or higher, far from the cutoff. "Is there a cinema in Kestrelford?", which the guides don't cover, scored 0.401 and passed the gate; the model then declined. | Add five near-miss questions (about the region but not answered by the guides); the system refuses at least 4 of 5, whether the gate or the model does the refusing. Not yet tested beyond the one question. |
+
+**Why rephrasing, not a fixed margin:** I first considered requiring the
+answer chunk to lead by a set distance (0.02). There's no standard value for
+this, because distances depend on the embedding model. So I measured how much
+rephrasing moves them: the same question in three wordings moved the answer
+chunk's distance by about 0.05 (bus: 0.595 to 0.647; evening meal: 0.468 to
+0.511). A margin smaller than that says little either way. Checking whether
+the rank survives rephrasing tests the actual risk directly.
+
+| Question and phrasing | Answer chunk | Rank | Runner-up | Lead |
+| --- | --- | --- | --- | --- |
+| Bus, original | 0.6374 | 1 | Marchwood opening chunk 0.6416 | 0.004 |
+| Bus, "single bus ticket work everywhere" | 0.5946 | 1 | Marchwood opening chunk 0.6599 | 0.065 |
+| Bus, "buy one ticket for all the buses" | 0.6472 | 1 | Marchwood "Getting around" 0.6754 | 0.028 |
+| Evening meal, original | 0.5106 | 1 | Pellew Sands "Eat and drink" 0.5151 | 0.005 |
+| Evening meal, "hardest to get… still served" | 0.5022 | 1 | Pellew Sands "Eat and drink" 0.5180 | 0.016 |
+| Evening meal, "difficult to find… still offer it" | 0.4684 | 1 | Corry Vale "Eat and drink" 0.4855 | 0.017 |
+
+### Pattern: chunks match on place and topic, which puts noise in front of the model
+
+Stage: **chunking**, which shapes what **embedding** captures and so what
+**retrieval** returns. It then reaches **generation**.
+
+Every chunk starts with `# Place` and `## Section`, and most sections are only
+a few sentences long, so a chunk's embedding is carried largely by its place
+and topic words. Rephrasing showed the answer chunk still ranks first. The
+cost is what comes with it:
+
+- **Same-topic sections crowd the top 5.** For the evening-meal question,
+  single-town "## Eat and drink" sections took 2–3 of the top 5 slots under
+  every phrasing, always within 0.02 of the answer.
+- **Opening chunks get in on title words alone.** `guide_accessibility.md#0`,
+  the chunk with no facts I flagged in unit 1, reached the bus question's
+  top 5 under two of three phrasings. `guide_marchwood.md`'s opening chunk
+  came second under two.
+- **Naming a town pulls in that town's chunks.** The bakery question returned
+  Kestrelford's "When to go" and "Getting around"; "Is there a cinema in
+  Kestrelford?" scored 0.401 though the guides never mention a cinema.
+
+**Where this leads:** Corry Vale's "## Eat and drink" was in the evening-meal
+top 5 under all three phrasings, second under one. It says one pub "serves
+food seven days a week", with no hours. In run 3 the model turned that into
+"you can still get a Sunday evening meal in Corry Vale" and cited the file.
+Retrieval kept handing the model a near-miss chunk, and generation filled
+the gap: `GROUNDING_INSTRUCTION` says to use only the documents, but it
+doesn't forbid inferring beyond them. This is the only wrong claim in 15
+answers, and it's the end of the chain above, not a separate problem.
+
 ## The Improvement
 
 **What I changed:**
