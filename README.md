@@ -275,23 +275,66 @@ grounding instruction, not the gate, is what caught this question.
      runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
      writes it all into results/ for you. Targets come from criteria.md; the
      verdict column is your call.
-
      Criterion 3 is measured in one deterministic pass rather than three, so
      the same number goes in all three run columns. That's correct, not lazy.
-
      Milestone 1. -->
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
-|---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| --- | --- | --- | --- | --- | --- |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunks are whole sections (heading start, sentence end) | 0 exceptions | 94/94 | 94/94 | 94/94 | MET |
+| 5. No-town questions reach the cross-cutting guide | 2 of 2 | 2/2 | 2/2 | 2/2 | MET |
+
+Source: `results/run_2026-09-29_1810_before.md`, produced by `run_eval.py::main`
+(top-k 5, cutoff 0.7, 3 runs, caching off). Criteria 1, 3, 4 and 5 depend only
+on chunking and retrieval, which are deterministic, so the same number appears
+in all three columns. Criterion 2 depends on the generated answer and is the
+only one that could vary. The wording changed on every run, which confirms
+the cache was off.
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+
+### Output behind each criterion (Run 1)
+
+**Criteria 1 and 2** — `run_eval.py::main`, from `results/run_2026-09-29_1810_before.md`
+
+```
+Q: How many people live in the largest village in Corry Vale?
+Best distance: 0.1637 · Sources retrieved: guide_corry_vale.md, guide_walking.md
+The largest village in Corry Vale has 900 people (guide_corry_vale.md).
+```
+
+**Criterion 3** — `run_eval.py::check_out_of_scope`
+
+```
+refused  (best distance 0.803)  What is the capital of Mongolia?
+refused  (best distance 0.888)  How do I change the oil in a diesel engine?
+refused  (best distance 0.975)  Who won the 1994 World Cup?
+refused  (best distance 0.835)  What is the recommended dosage of ibuprofen for a headache?
+refused  (best distance 0.836)  How do I write a for loop in Rust?
+-> gate refused 5 of 5
+
+python app.py ask "What is the capital of Mongolia?"
+I don't have enough information about that.
+```
+
+**Criterion 4** — chunks from `chunker.py::split_documents`, checked by `check_chunks.py`
+
+```
+94 chunks checked, 0 fail
+```
+
+**Criterion 5** — `run_eval.py::main`
+
+```
+Q: Why can't visitors use one bus ticket across the whole region?
+Best distance: 0.6374 · Sources retrieved: guide_accessibility.md, guide_kestrelford.md, guide_marchwood.md, guide_regional_transport.md
+Visitors cannot use one bus ticket across the whole region because there are three different operators running in the region, and they do not accept each other's tickets (guide_regional_transport.md).
+```
 
 ## Verdicts
 
