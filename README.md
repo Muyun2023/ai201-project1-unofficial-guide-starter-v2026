@@ -348,12 +348,12 @@ Visitors cannot use one bus ticket across the whole region because there are thr
      Milestone 2. -->
 
 | # | Criterion | Verdict | How I decided |
-|---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| --- | --- | --- | --- |
+| 1 | Retrieved chunk contains the answer (4 of 5) | MET | 5/5 in all three runs. For each question I checked that the expected fact (11am, 1863, Sunday, 900, three operators) appears in a chunk that was retrieved, not just in the answer. The one I flagged as the main risk, the Corry Vale population in the preamble, came back at 0.164, the closest of all five. |
+| 2 | Every answer names a source (5 of 5) | MET | All 15 answers name at least one file. The format varied from run to run (`Source:`, `Sources:`, a filename in brackets), but every answer had one. The criterion checks only that a source is named, and one answer shows the gap: in run 3 of the evening-meal question the model added that Corry Vale is a place to get this meal and cited `guide_corry_vale.md`. That file says one pub "serves food seven days a week" and gives no hours, so "Sunday evening" was the model's own inference. The source was named, but the claim goes beyond it. This criterion can't catch that. |
+| 3 | Gate stops out-of-corpus questions (4 of 5) | MET | 5/5 refused, closest at 0.803 against a 0.7 cutoff. Each refused question returns exactly "I don't have enough information about that", as the criterion says (checked with `python app.py ask "What is the capital of Mongolia?"`). The two questions I expected to sit closest to the boundary (ibuprofen, diesel) came back at 0.835 and 0.888; the closest was actually Mongolia at 0.803, so the result met the target but my reasoning about which questions were at risk didn't hold. |
+| 4 | Chunks are whole sections (no exceptions) | MET | `check_chunks.py` reports 94 chunks checked, 0 fail. This measures format only: `guide_accessibility.md#0` passes but holds no facts. |
+| 5 | No-town questions reach the cross-cutting guide (2 of 2) | MET | Both questions retrieved the right document in all three runs: `guide_eating.md` at 0.511 and `guide_regional_transport.md` at 0.637. The second is only 0.063 under my 0.7 cutoff. Under the starter's 0.6, the gate would have refused it: retrieval would still have found the right chunk, but it would never have reached the model. The criterion is met, but by a narrow margin. |
 
 ## Diagnoses
 
