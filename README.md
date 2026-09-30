@@ -21,26 +21,64 @@ Muyun Ji · corpus: `city_guides`
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
+<!-- Which corpus picked, and the kinds of questions this system answers. Write for someone who has never seen this repo.-->
 
-     Milestone 5. -->
+This system answers practical trip-planning questions about a fictional
+region, using the `city_guides` corpus: fourteen travel guides, nine on
+individual towns and villages (Kestrelford, Corry Vale, Givens Mill and
+others) and five that cover the whole region on eating, walking, transport,
+seasons and accessibility. You can ask things like when a town's bakery sells
+out, how to get between villages by bus, or which month to visit, and it
+answers only from the guides, naming the file each answer came from. If
+nothing in the guides is close enough to the question, it says it doesn't
+have enough information instead of guessing.
 
 ## Chunking Strategy
 
+<!-- What made you pick these numbers? Short posts and long sectioned guides don't want the same chunking, and "800 seemed reasonable" earns nothing. Point at something you noticed when you read
+the documents in Milestone 1.
+If you changed your mind partway through, say so and say why. That's worth more than pretending you got it right first time.
+Milestone 3. -->
+
 **Chunk size:**
+app.py index
+Corpus: city_guides
+  loaded   14 documents, 28,958 characters, ~2,068 characters per document
+  chunked  94 chunks, 322 characters on average (shortest 174, longest 762), produced by chunker.py::split_documents
+  embedding 94 chunks (first run downloads the model)...
+  stored   94 chunks in 4.4s
+
 **Overlap:**
+0
 
-<!-- What about YOUR documents made you pick these numbers? Short posts and
-     long sectioned guides don't want the same chunking, and "800 seemed
-     reasonable" earns nothing. Point at something you noticed when you read
-     the documents in Milestone 1.
+The `city_guides` documents are long guides that the author has already
+divided into labelled sections (`## Getting there`, `## Eat and drink`,
+`## When to go`...), and each section covers one subject. The starter's
+800-character windows ignored those boundaries: it made 51 chunks and cut
+straight through sections, often mid-sentence. So I cut where the author
+did. `split_documents` follows four rules:
 
-     If you changed your mind partway through, say so and say why. That's worth
-     more than pretending you got it right first time.
+1. **Cut before every `## ` heading.** One section, one chunk.
+2. **Keep each document's opening part** (the `# H1` title plus any text
+   before the first `##`) **as its own chunk.** `guide_corry_vale.md` gives
+   its population there and nowhere else, so dropping it would lose that fact.
+3. **Drop any part with a heading but no body.** `guide_walking.md`,
+   `guide_eating.md` and `guide_seasons.md` go straight from the title to
+   the first `##`, which left 23–26 character chunks that could answer
+   nothing.
+4. **Add the document's `# H1` title to the top of every section chunk.**
+   Nine of the fourteen guides use the same section headings, so a chunk
+   like "## Eat and drink / A tearoom attached to the mill..." never says
+   which place it is about. The title is what tells the search which town
+   a section belongs to.
 
-     Milestone 3. -->
+There is no overlap because overlap repairs cuts made in arbitrary places.
+These cuts fall where the author put a boundary, so nothing is cut in half.
+
+**Side effect I noticed in Milestone 4:** because every chunk carries its
+town name, a question that names a town pulls in that town's unrelated
+sections too. "What time does the bakery in Kestrelford sell out?" returned
+Kestrelford's "When to go" and "Getting around" in its top 5.
 
 **Known issue:** Rule 2 (keep each document's opening part as its own chunk)
 can produce chunks with no facts, e.g. `guide_accessibility.md#0`. I haven't
@@ -52,16 +90,14 @@ rule in place for now and will revisit it in Unit 2.
 <!-- Five chunks, pasted as text. Label each one and name the file it came from
      AND the function that produced it — the grader checks your code against
      what you claim here.
-
      `python app.py chunks -n 5` prints all three for you. Copy them straight
      across.
-
      Milestone 3. -->
 
 **Chunk 1** — source: `guide_accessibility.md#0` — produced by: `chunker.py::split_documents`
 
 <!--
-> ** ！！！Note — known weakness！！！** 
+> ** ！！！My own Note — known weakness！！！** 
 This chunk carries no facts. It is the opening
 > part of `guide_accessibility.md` (the `# H1` line plus its preamble), which
 > `split_documents` keeps as a chunk of its own under rule 2. That rule exists
@@ -97,6 +133,7 @@ difficult and it is better to know in advance.
 ## Where to stay
 
 Perhaps thirty beds in the entire valley, spread across two pubs and a handful of farmhouse rooms. In summer these are booked months ahead. Camping is permitted on two marked fields and nowhere else.
+
 ```
 
 **Chunk 3** — source: `guide_givens_mill.md#2` — produced by: `chunker.py::split_documents`
@@ -107,6 +144,7 @@ Perhaps thirty beds in the entire valley, spread across two pubs and a handful o
 ## Getting around
 
 Everything is on one street along the river. The mill is at one end and the church at the other, eight minutes apart. The riverside path continues in both directions for as far as you want to walk.
+
 ```
 
 **Chunk 4** — source: `guide_kestrelford.md#4` — produced by: `chunker.py::split_documents`
@@ -128,6 +166,7 @@ The market square on a Saturday morning is the main event and has run continuous
 ## When to go
 
 June and September for the beach without the crowds. July and August are busy and the town is at its most itself, for better and worse. Winter is bleak, largely closed, and has a following among people who like that sort of thing.
+
 ```
 
 ## Sample Answer
@@ -146,17 +185,16 @@ What time does the bakery in Kestrelford sell out?
 > (Sources: `guide_kestrelford.md` and `guide_eating.md`)
 >
 > Sources retrieved: guide_eating.md, guide_kestrelford.md
+
 ```
 
 **My relevance cutoff:**
 
 <!-- The number you set in config.py, and how you got there.
-
      You ran five questions your corpus covers and the five in OUT_OF_SCOPE
      that it clearly doesn't, and wrote down the best distance for each. What
      did those two groups look like? Where was the gap? Put the actual numbers
      here — the table below wants all ten rows.
-
      Milestone 4. -->
 
 **My relevance cutoff:** 0.7
@@ -194,22 +232,35 @@ refusal, which I may tighten later.
 
 <!-- Two specific moments. For each: what you asked for, what came back, and
      what you changed about it.
-
      "I asked Claude to write the chunking function from my notes. It ignored
      the overlap, so I added that myself" is the level of detail we're after.
      "I used AI to help me code" is not.
-
      Milestone 5. -->
 
-**1.**
+**1.** After printing five chunks, I pasted them into Claude and asked
+whether each could answer a question on its own. It said chunks 2–5 could,
+and pointed out that chunk 1 (`guide_accessibility.md#0`) held only an
+introduction and no facts. That chunk comes from my rule 2, which keeps each
+document's opening part so the Corry Vale population isn't lost. Claude
+suggested either merging the opening part into the first section or keeping
+it and documenting the problem. I chose not to change the chunker yet,
+because any fix still has to keep the Corry Vale fact, and I'd rather see in
+Unit 2 whether this chunk actually shows up in retrieval. I added a note
+under the chunk instead.
 
-**2.**
+**2.** When I set the relevance cutoff, Claude helped me read my ten
+distances and suggested 0.7, predicting that near-miss questions would land
+between 0.6 and 0.8. I tested that with "Is there a cinema in Kestrelford?",
+which the guides don't cover. It scored 0.401, closer than two of my real
+questions, so the prediction was wrong: no cutoff could stop it. I replaced
+that sentence in my README with the measured result, and wrote down that the
+grounding instruction, not the gate, is what caught this question.
+
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
      ───────────────────────────────────────────────────────────────────────── -->
-
 ---
 
 # Unit 2
