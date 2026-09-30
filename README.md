@@ -439,6 +439,8 @@ answers, and it's the end of the chain above, not a separate problem.
 
 **What I changed:**
 
+I'm merging each document's opening part into its first ## section, so that opening chunks with no facts, like guide_accessibility.md#0, stop taking a top-5 slot.
+
 **Why I picked it:**
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
