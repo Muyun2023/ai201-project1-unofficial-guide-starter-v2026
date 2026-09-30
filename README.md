@@ -1,6 +1,6 @@
 # The Unofficial Guide
 
-Muyun Ji · corpus: `city_guides`
+corpus: `city_guides`
 
 ---
 
