@@ -2,26 +2,11 @@
 
 Muyun Ji · corpus: `city_guides`
 
-> **This file is your submission.** Fill it in as you go — most sections get
-> written during the milestone that produces them, not at the end.
->
-> How the starter works, and every command you'll need, is in `RUNNING.md`.
-> Leave that file alone.
->
-> **Paste everything as text.** No screenshots, no video. A typed table gets
-> full credit; a picture of the same table gets none.
->
-> Delete these instruction blocks as you replace them. The `<!-- -->` comments
-> are notes to you and don't show up when the page renders — you can leave them
-> or remove them.
-
 ---
 
 # Unit 1
 
 ## What This Does
-
-<!-- Which corpus picked, and the kinds of questions this system answers. Write for someone who has never seen this repo.-->
 
 This system answers practical trip-planning questions about a fictional
 region, using the `city_guides` corpus: fourteen travel guides, nine on
@@ -35,21 +20,13 @@ have enough information instead of guessing.
 
 ## Chunking Strategy
 
-<!-- What made you pick these numbers? Short posts and long sectioned guides don't want the same chunking, and "800 seemed reasonable" earns nothing. Point at something you noticed when you read
-the documents in Milestone 1.
-If you changed your mind partway through, say so and say why. That's worth more than pretending you got it right first time.
-Milestone 3. -->
+**Chunk size:** one `##` section per chunk, with no fixed character count.
 
-**Chunk size:**
-app.py index
-Corpus: city_guides
-  loaded   14 documents, 28,958 characters, ~2,068 characters per document
-  chunked  94 chunks, 322 characters on average (shortest 174, longest 762), produced by chunker.py::split_documents
-  embedding 94 chunks (first run downloads the model)...
-  stored   94 chunks in 4.4s
+```
+chunked  94 chunks, 322 characters on average (shortest 174, longest 762), produced by chunker.py::split_documents
+```
 
-**Overlap:**
-0
+**Overlap:** 0
 
 The `city_guides` documents are long guides that the author has already
 divided into labelled sections (`## Getting there`, `## Eat and drink`,
@@ -62,6 +39,8 @@ did. `split_documents` follows four rules:
 2. **Keep each document's opening part** (the `# H1` title plus any text
    before the first `##`) **as its own chunk.** `guide_corry_vale.md` gives
    its population there and nowhere else, so dropping it would lose that fact.
+   *(Changed in unit 2: the opening part is now merged into the first
+   section's chunk. See The Improvement.)*
 3. **Drop any part with a heading but no body.** `guide_walking.md`,
    `guide_eating.md` and `guide_seasons.md` go straight from the title to
    the first `##`, which left 23–26 character chunks that could answer
@@ -87,18 +66,16 @@ rule in place for now and will revisit it in Unit 2.
 
 ## Sample Chunks
 
-<!-- Five chunks, pasted as text. Label each one and name the file it came from
-     AND the function that produced it — the grader checks your code against
-     what you claim here.
-     `python app.py chunks -n 5` prints all three for you. Copy them straight
-     across.
-     Milestone 3. -->
-
 **Chunk 1** — source: `guide_accessibility.md#0` — produced by: `chunker.py::split_documents`
 
-<!--
-> ** ！！！My own Note — known weakness！！！** 
-This chunk carries no facts. It is the opening
+```
+# Getting around the region with limited mobility
+
+An honest assessment rather than a promotional one. Some of these places are
+difficult and it is better to know in advance.
+```
+
+> **Note — known weakness.** This chunk carries no facts. It is the opening
 > part of `guide_accessibility.md` (the `# H1` line plus its preamble), which
 > `split_documents` keeps as a chunk of its own under rule 2. That rule exists
 > because `guide_corry_vale.md` states its population in the preamble and
@@ -116,14 +93,6 @@ This chunk carries no facts. It is the opening
 >    keeping it separate.
 > 2. Keep the opening part only if it is longer than a minimum length.
 >    The threshold still needs to be checked against the Corry Vale preamble.
--->
-```
-# Getting around the region with limited mobility
-
-An honest assessment rather than a promotional one. Some of these places are
-difficult and it is better to know in advance.
-
-```
 
 **Chunk 2** — source: `guide_corry_vale.md#5` — produced by: `chunker.py::split_documents`
 
@@ -133,7 +102,6 @@ difficult and it is better to know in advance.
 ## Where to stay
 
 Perhaps thirty beds in the entire valley, spread across two pubs and a handful of farmhouse rooms. In summer these are booked months ahead. Camping is permitted on two marked fields and nowhere else.
-
 ```
 
 **Chunk 3** — source: `guide_givens_mill.md#2` — produced by: `chunker.py::split_documents`
@@ -144,7 +112,6 @@ Perhaps thirty beds in the entire valley, spread across two pubs and a handful o
 ## Getting around
 
 Everything is on one street along the river. The mill is at one end and the church at the other, eight minutes apart. The riverside path continues in both directions for as far as you want to walk.
-
 ```
 
 **Chunk 4** — source: `guide_kestrelford.md#4` — produced by: `chunker.py::split_documents`
@@ -155,7 +122,6 @@ Everything is on one street along the river. The mill is at one end and the chur
 ## What to see
 
 The market square on a Saturday morning is the main event and has run continuously since the 1400s. The parish church has a 13th-century tower you can climb for £2. The old trackbed walk runs six miles to the next village along an easy gradient and is the best half-day here.
-
 ```
 
 **Chunk 5** — source: `guide_pellew_sands.md#6` — produced by: `chunker.py::split_documents`
@@ -166,36 +132,21 @@ The market square on a Saturday morning is the main event and has run continuous
 ## When to go
 
 June and September for the beach without the crowds. July and August are busy and the town is at its most itself, for better and worse. Winter is bleak, largely closed, and has a following among people who like that sort of thing.
-
 ```
 
 ## Sample Answer
 
-<!-- One complete question and answer, pasted as text, with the source line
-     visible. Milestone 4. -->
-
-**Question:**
-What time does the bakery in Kestrelford sell out?
+**Question:** What time does the bakery in Kestrelford sell out?
 
 **Answer:**
 
 ```
-> The bakery in Kestrelford sells out by 11am.
->
-> (Sources: `guide_kestrelford.md` and `guide_eating.md`)
->
-> Sources retrieved: guide_eating.md, guide_kestrelford.md
+The bakery in Kestrelford sells out by 11am.
 
+(Sources: `guide_kestrelford.md` and `guide_eating.md`)
+
+Sources retrieved: guide_eating.md, guide_kestrelford.md
 ```
-
-**My relevance cutoff:**
-
-<!-- The number you set in config.py, and how you got there.
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-     Milestone 4. -->
 
 **My relevance cutoff:** 0.7
 
@@ -218,9 +169,9 @@ default of 0.6 wrongly refused the bus-ticket question (0.637), even though
 the top chunk (guide_regional_transport.md, "Buses") holds the answer. Its
 distance is high because the question says "one bus ticket" while the
 document says "three operators". I put the cutoff at 0.7, which leaves
-about 0.06 of margin below it and 0.10 above. 
+about 0.06 of margin below it and 0.10 above.
 
-The risk: The risk is near-miss questions. "Is there a cinema in Kestrelford?" isn't
+The risk is near-miss questions. "Is there a cinema in Kestrelford?" isn't
 covered by the guides, but it scored 0.401, closer than two of my in-corpus
 questions, because the place name matches the "# Kestrelford" title on every
 chunk. No cutoff could refuse it without also refusing real questions. It
@@ -230,12 +181,7 @@ refusal, which I may tighten later.
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
-     what you changed about it.
-     "I asked Claude to write the chunking function from my notes. It ignored
-     the overlap, so I added that myself" is the level of detail we're after.
-     "I used AI to help me code" is not.
-     Milestone 5. -->
+### Unit 1
 
 **1.** After printing five chunks, I pasted them into Claude and asked
 whether each could answer a question on its own. It said chunks 2–5 could,
@@ -256,28 +202,41 @@ questions, so the prediction was wrong: no cutoff could stop it. I replaced
 that sentence in my README with the measured result, and wrote down that the
 grounding instruction, not the gate, is what caught this question.
 
+### Unit 2
 
-<!-- ── Stretch features ─────────────────────────────────────────────────────
-     Doing one? Say so here BEFORE you start. A feature this README never
-     claims earns nothing.
-     ───────────────────────────────────────────────────────────────────────── -->
+**1. Arguing the opposite verdict.** For Milestone 2 I asked Claude to argue
+against each MET verdict. One argument was that criterion 2 checks only that
+a source is named, and that run 3 of the evening-meal question might contain
+a claim its source doesn't support. I checked `guide_corry_vale.md` myself:
+it says one pub "serves food seven days a week" and gives no hours, so
+"Sunday evening" was the model's inference. I kept the verdict as MET,
+because the criterion was met as written, and recorded the gap in the verdict.
+
+**2. A number with no basis.** Claude suggested tightening criterion 1 to
+"the answer chunk leads by at least 0.02". I asked what the industry standard
+was. It said there isn't one, because distances depend on the embedding
+model, and suggested measuring how much rephrasing moves them instead. I ran
+three phrasings each of my two narrowest questions. Distances moved by about
+0.05, but the answer chunk ranked first in all 6. That overturned Claude's
+guess that a narrow lead meant the ranking would flip, and I rewrote my
+diagnosis around what the rephrasing showed.
+
+**3. Pushing back on the fix.** Claude recommended merging opening chunks
+into the first section. I objected that the merged chunk would still carry
+the title "Getting around the region" and might keep matching on it. Claude
+agreed it could, and that became risk 1 in my improvement write-up. The
+after test showed it didn't happen: the chunk dropped out of every top 5.
+
+Claude drafted much of the English in this README. I checked every number
+against my own output files, and where the drafts made a claim I hadn't
+verified (for example, that the bus-ticket chunk contained the answer), I
+checked it before keeping it.
+
 ---
 
 # Unit 2
 
-<!-- These sections get ADDED to what's already above. Don't delete or rewrite
-     unit 1 — the point is that someone can see what you said before you knew
-     how it went. -->
-
 ## Run Log — Before
-
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-     Milestone 1. -->
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 | --- | --- | --- | --- | --- | --- |
@@ -293,10 +252,6 @@ on chunking and retrieval, which are deterministic, so the same number appears
 in all three columns. Criterion 2 depends on the generated answer and is the
 only one that could vary. The wording changed on every run, which confirms
 the cache was off.
-
-<!-- Underneath, paste the REAL output for each criterion from one of your
-     runs — the actual text your system produced, not a description of it.
-     Name the file and function that produced it. -->
 
 ### Output behind each criterion (Run 1)
 
@@ -318,7 +273,7 @@ refused  (best distance 0.835)  What is the recommended dosage of ibuprofen for 
 refused  (best distance 0.836)  How do I write a for loop in Rust?
 -> gate refused 5 of 5
 
-python app.py ask "What is the capital of Mongolia?"
+$ python app.py ask "What is the capital of Mongolia?"
 I don't have enough information about that.
 ```
 
@@ -338,15 +293,6 @@ Visitors cannot use one bus ticket across the whole region because there are thr
 
 ## Verdicts
 
-<!-- MET or MISSED for each of the five, against the target you wrote last
-     unit — not a new one. Plus a sentence on how you decided. That sentence
-     matters most where it was close.
-
-     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
-     The target has to hold, not show up occasionally.
-
-     Milestone 2. -->
-
 | # | Criterion | Verdict | How I decided |
 | --- | --- | --- | --- |
 | 1 | Retrieved chunk contains the answer (4 of 5) | MET | 5/5 in all three runs. For each question I checked that the expected fact (11am, 1863, Sunday, 900, three operators) appears in a chunk that was retrieved, not just in the answer. The one I flagged as the main risk, the Corry Vale population in the preamble, came back at 0.164, the closest of all five. |
@@ -356,24 +302,6 @@ Visitors cannot use one bus ticket across the whole region because there are thr
 | 5 | No-town questions reach the cross-cutting guide (2 of 2) | MET | Both questions retrieved the right document in all three runs: `guide_eating.md` at 0.511 and `guide_regional_transport.md` at 0.637. The second is only 0.063 under my 0.7 cutoff. Under the starter's 0.6, the gate would have refused it: retrieval would still have found the right chunk, but it would never have reached the model. The criterion is met, but by a narrow margin. |
 
 ## Diagnoses
-
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
-
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
-
-     The five stages: loading → chunking → embedding → retrieval → generation.
-
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
-
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
-
-     Milestone 3. -->
 
 **No criterion was missed.** All five met their targets in all three runs.
 The assignment asks what that means, and I think it means some of my targets
@@ -550,20 +478,88 @@ Corry Vale chunk still reaches the model. None of the three after-run answers
 repeated the "Sunday evening in Corry Vale" inference, but since the model
 saw the same chunks, that is chance, not this change.
 
-
-
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
-     Milestone 5. -->
+No criterion is missed after the fix. These problems are still real, and
+none of my five criteria would catch them.
 
+**1. The model can infer past the text** (generation).
+In run 3 of the before test, the model turned Corry Vale's "serves food
+seven days a week" into "you can still get a Sunday evening meal in Corry
+Vale". That chunk still reaches the model for the evening-meal question, so
+the chain that produced the claim is unchanged.
+*What I'd do:* add a line to `GROUNDING_INSTRUCTION` telling the model not to
+draw conclusions a document doesn't state, then run the evening-meal question
+many more times before and after (it appeared once in three runs, so three
+runs can't show whether a fix worked).
+*Why I stopped:* the unit allows one change, and I spent it on chunking.
 
+**2. Chunks still match on place and topic, not on the fact** (chunking →
+retrieval).
+For the evening-meal question, single-town "## Eat and drink" sections take
+2–3 of the top 5 under every phrasing, within 0.02 of the answer. Questions
+that name a town pull in that town's unrelated sections. Marchwood's merged
+opening chunk still reaches the bus questions' top 5 in 3 of 9 queries.
+*What I'd do:* try hybrid search, since BM25 should favour chunks that share
+a rare word with the question ("bakery") over chunks that only share a place
+name.
+*Why I stopped:* one change per unit. I'd also need to work out first which
+score the relevance gate would use, because if it moved to a combined score
+the 0.7 cutoff would need re-measuring, and that would be a second change.
+
+**3. Near-miss questions get past the gate** (retrieval / gate).
+"Is there a cinema in Kestrelford?" isn't covered by the guides but scored
+0.401, closer than two of my real questions. No cutoff can refuse it without
+refusing real questions. The model declined to answer, but it cited
+`guide_kestrelford.md` while declining.
+*What I'd do:* add five near-miss questions to the test and measure how many
+the system refuses end to end, whether the gate or the model refuses.
+*Why I stopped:* I've tested only one near-miss question, and a proper test
+needs a new criterion, which belongs in the next unit's planning rather than
+this one.
+
+**4. What the fix cost.**
+The Corry Vale population chunk's lead over the next chunk shrank from 0.18
+to 0.06. It still ranks first, but it's the one place my change made
+retrieval less certain.
+*What I'd do:* keep an eye on it as the question set grows. If a rephrased
+population question ever ranks another chunk first, the opening part may
+need to stay separate when it holds facts.
+*Why I stopped:* it still ranks first and every answer was correct.
+
+I also listed "a merged chunk could be too broad" as risk 3, and checked it
+before submitting. The longest chunk after the change (887 characters) is the
+merged `guide_accessibility.md#0` itself: the two-sentence introduction plus
+"## Straightforward". It's long because that section covers three towns, but
+it stays on one subject, the places that are easiest with limited mobility,
+and the introduction adds length without adding a subject. So risk 3 didn't
+really happen.
 
 ## What I'd Do Differently
 
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
-     Milestone 5. -->
+My criteria checked whether something happened, not how reliably or how
+well. All five passed first time, and the problems the test did find sat in
+the gaps between them. Next time:
+
+**Criteria 1 and 5** asked only whether the answer chunk reached the top 5.
+I'd ask whether it ranks first, and I wouldn't use a fixed distance margin
+to measure how safely: the right value depends on the embedding model and
+would have to be re-measured whenever the model or corpus changes. Three
+phrasings per question worked at this scale, but it doesn't grow well. I'd
+build a larger, more varied question set with the expected chunk labelled for
+each, measure the share of questions where that chunk ranks first, and use a
+small lead only to flag questions for a closer look.
+
+**Criterion 2** checked that an answer names a file, not that the answer
+matches it. The one wrong claim in 30 answers named a source. I'd write it
+as: every factual claim in an answer appears in the file it cites.
+
+**Criterion 3** used out-of-scope questions so far from the corpus that the
+closest was 0.80 against a 0.7 cutoff. The hard case is a question about the
+region that the guides don't answer. I'd add near-miss questions and count a
+refusal from either the gate or the model.
+
+**Criterion 4** measured format only, so a chunk with no facts passed. I
+wouldn't try to measure "has facts" directly. I'd measure its effect instead,
+as I did in Milestone 4: how often a chunk that can't answer the question
+takes a top-5 slot.
